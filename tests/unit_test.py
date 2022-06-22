@@ -186,9 +186,9 @@ def request(path, method='GET', data=None, json_response=False):
             res_data = res.read().decode('utf-8')
             if json_response:
                 res_data = json.loads(res_data)
-            return (res.getcode(), res_data)
+            return res.getcode(), res_data
     except urllib.error.HTTPError as e:
-        return (e.getcode(), None)
+        return e.getcode(), None
 
 
 def deep_sort_children(node):
