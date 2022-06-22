@@ -1,6 +1,6 @@
 from typing import Union
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.routes.log_route import LogRoute
@@ -67,3 +67,4 @@ def post_imports(
         for value in response['items']:
             session.merge(Shop(**value, date=updated_date))
         session.commit()
+    return Response(status_code=status.HTTP_200_OK)

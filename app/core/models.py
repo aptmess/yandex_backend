@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Optional
+from typing import List
 
 import sqlalchemy as sa
 import sqlalchemy.orm as so

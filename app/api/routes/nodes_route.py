@@ -46,10 +46,7 @@ def get_nodes_id(
     """
     shop = session.query(Shop).filter_by(id=id).one_or_none()
     if shop is None:
-        raise HTTPException(
-            status_code=404,
-            detail='Item not found'
-        )
+        raise HTTPException(status_code=404, detail='Item not found')
 
     if shop.type == ShopUnitType.CATEGORY:
         return recursive_nodes(shop)[0]
