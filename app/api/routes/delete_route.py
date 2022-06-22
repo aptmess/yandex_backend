@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.api.routes.log_route import LogRoute
 from app.core.engine import get_session
-from app.schemas.output_schemas import Error
+from app.schemas.error import Error
 
 router = APIRouter(route_class=LogRoute)
 

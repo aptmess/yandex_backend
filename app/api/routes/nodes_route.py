@@ -6,10 +6,8 @@ from sqlalchemy.orm import Session
 
 from app.api.routes.log_route import LogRoute
 from app.core.engine import get_session
-from app.schemas.output_schemas import (
-    Error,
-    ShopUnit,
-)
+from app.schemas.error import Error
+from app.schemas.statistic import ShopUnit
 
 router = APIRouter(route_class=LogRoute)
 
@@ -54,4 +52,3 @@ def get_nodes_id(
                 "message": "Item not found"
             }
     """
-

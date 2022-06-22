@@ -5,10 +5,8 @@ from uuid import UUID
 from fastapi import APIRouter, Query
 
 from app.api.routes.log_route import LogRoute
-from app.schemas.output_schemas import (
-    Error,
-    ShopUnitStatisticResponse,
-)
+from app.schemas.error import Error
+from app.schemas.statistic import ShopUnitStatisticResponse
 
 router = APIRouter(route_class=LogRoute)
 
