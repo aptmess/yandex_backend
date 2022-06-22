@@ -2,12 +2,15 @@ from typing import Union
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
+from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
 from app.api.routes.log_route import LogRoute
 from app.core.engine import get_session
+from app.core.models import Shop
+from app.core.utils import recursive_nodes
 from app.schemas.error import Error
-from app.schemas.shop_item import ShopUnit
+from app.schemas.shop_item import ShopUnit, ShopUnitType
 
 router = APIRouter(route_class=LogRoute)
 
@@ -41,3 +44,12 @@ def get_nodes_id(
 
     - 404: Категория/товар не найден. "Item not found"
     """
+    shop = session.query(Shop).filter_by(id=id).one_or_none()
+    if shop is None:
+        raise HTTPException(
+            status_code=404,
+            detail='Item not found'
+        )
+
+    if shop.type == ShopUnitType.CATEGORY:
+        return recursive_nodes(shop)[0]

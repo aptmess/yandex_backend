@@ -7,7 +7,13 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field, validator
 
-from app.schemas.utils import check_isoformat_data
+from app.core.utils import check_isoformat_data
+
+
+def convert_datetime_to_iso_8601_with_z_suffix(dt: datetime) -> str:
+    return dt.isoformat(
+        timespec='milliseconds',
+    ).replace('+00:00', 'Z')
 
 
 class ShopUnitType(Enum):
@@ -48,8 +54,11 @@ class ShopUnit(BaseModel):
     )
 
     @validator('date')
-    def name_must_contain_space(cls, v):
+    def check_date_iso_8601(cls, v):
         return check_isoformat_data(v)
+
+    class Config:
+        json_encoders = {datetime: convert_datetime_to_iso_8601_with_z_suffix}
 
 
 class ShopUnitImport(BaseModel):
@@ -82,5 +91,5 @@ class ShopUnitImportRequest(BaseModel):
     )
 
     @validator('updateDate')
-    def name_must_contain_space(cls, v):
+    def check_date_iso_8601(cls, v):
         return check_isoformat_data(v)

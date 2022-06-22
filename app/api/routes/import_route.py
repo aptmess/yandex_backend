@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.api.routes.log_route import LogRoute
 from app.core.engine import get_session
+from app.core.models import Shop
 from app.schemas.error import Error
 from app.schemas.shop_item import ShopUnitImportRequest
 
@@ -60,3 +61,9 @@ def post_imports(
 
     - 400: Невалидная схема документа или входные данные не верны. "Validation Failed"
     """
+    response = body.dict()
+    updated_date = response['updateDate']
+    if body is not None:
+        for value in response['items']:
+            session.merge(Shop(**value, date=updated_date))
+        session.commit()
