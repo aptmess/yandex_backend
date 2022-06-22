@@ -22,7 +22,7 @@ docker_up:
 
 .PHONY: app
 app:
-	docker-compose up --build -d
+	docker-compose up --build -d app
 
 .PHONY: up
 up:
