@@ -20,6 +20,10 @@ docker:
 docker_up:
 	docker-compose up -d
 
+.PHONY: app
+app:
+	docker-compose up --build -d
+
 .PHONY: up
 up:
 	uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
