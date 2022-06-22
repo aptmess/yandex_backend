@@ -8,7 +8,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 
-from app.schemas.shop_item_schemas import ShopUnitType
+from app.schemas.shop_item import ShopUnitType
 
 
 class ShopUnitStatisticUnit(BaseModel):
