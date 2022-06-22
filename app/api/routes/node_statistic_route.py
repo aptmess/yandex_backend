@@ -42,4 +42,3 @@ def get_node_id_statistic(
 
     - 404: Категория/товар не найден. "Item not found"
     """
-    pass

@@ -5,7 +5,9 @@ from enum import Enum
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
+
+from app.schemas.utils import check_isoformat_data
 
 
 class ShopUnitType(Enum):
@@ -45,6 +47,10 @@ class ShopUnit(BaseModel):
         'Для товаров поле равно null.',
     )
 
+    @validator('date')
+    def name_must_contain_space(cls, v):
+        return check_isoformat_data(v)
+
 
 class ShopUnitImport(BaseModel):
     id: UUID = Field(
@@ -74,3 +80,7 @@ class ShopUnitImportRequest(BaseModel):
         description='Время обновления добавляемых товаров/категорий.',
         example='2022-05-28T21:12:01.000Z',
     )
+
+    @validator('updateDate')
+    def name_must_contain_space(cls, v):
+        return check_isoformat_data(v)

@@ -38,4 +38,3 @@ def delete_delete_id(
 
     - 404: Категория/товар не найден. "Item not found"
     """
-    pass

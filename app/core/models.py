@@ -33,7 +33,9 @@ class ShopUnit(Base):
         nullable=True,
     )
 
-    price = sa.Column(sa.Integer, nullable=True)
+    price = sa.Column(
+        sa.Integer, sa.CheckConstraint('price > 0'), nullable=True
+    )
 
     children: List['ShopUnit'] = so.relationship(
         'ShopUnit',
