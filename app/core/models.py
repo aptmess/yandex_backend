@@ -37,6 +37,12 @@ class Shop(Base):
         cascade='all, delete',
     )
 
+    posts = so.relationship(
+        'ShopHistory',
+        backref=so.backref('parent', remote_side='ShopHistory.id'),
+        cascade='all, delete',
+    )
+
     def __init__(self, id, name, type, parentId=None, *args, **kwargs):
         self.id = id
         self.name = name
