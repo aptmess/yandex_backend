@@ -8,7 +8,7 @@ from app.core.engine import get_session
 from app.core.models import Shop, ShopHistory
 from app.schemas.error import Error
 from app.schemas.response import HTTP_400_RESPONSE
-from app.schemas.shop_item import ShopUnitImportRequest, ShopUnitType
+from app.schemas.shop_item import ShopUnitImportRequest
 
 router = APIRouter(route_class=LogRoute)
 
@@ -75,9 +75,7 @@ def post_imports(
     if body is not None:
         for value in response['items']:
             session.merge(Shop(**value))
-            session.add(
-                ShopHistory(**value, date=updated_date)
-            )
+            session.add(ShopHistory(**value, date=updated_date))
 
         session.commit()
     return Response(status_code=status.HTTP_200_OK)

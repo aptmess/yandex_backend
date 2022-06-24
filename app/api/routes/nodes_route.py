@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 
 from app.api.routes.log_route import LogRoute
 from app.core.engine import get_session
-from sqlalchemy import func
 from app.core.models import Shop, ShopHistory
 from app.core.utils import recursive_nodes, row2dict
 from app.exceptions import EXCEPTION_404_NOT_FOUND
@@ -58,7 +57,6 @@ def get_nodes_id(
     if shop is None:
         raise EXCEPTION_404_NOT_FOUND
     if shop.type == ShopUnitType.CATEGORY:
-        m = recursive_nodes(shop, session, ShopHistory)[0]
-        return m
+        return recursive_nodes(shop, session, ShopHistory)[0]
     else:
         return row2dict(shop)

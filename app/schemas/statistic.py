@@ -6,8 +6,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field, validator
 
+from app.core.utils import check_isoformat_data, convert_datetime_to_iso
 from app.schemas.shop_item import ShopUnitType
-from app.core.utils import convert_datetime_to_iso, check_isoformat_data
 
 
 class ShopUnitStatisticUnit(BaseModel):
@@ -33,7 +33,7 @@ class ShopUnitStatisticUnit(BaseModel):
     date: datetime = Field(
         ...,
         description='Время последнего обновления элемента.',
-        example='2022-05-28T21:12:01.000Z'
+        example='2022-05-28T21:12:01.000Z',
     )
 
     @validator('date')

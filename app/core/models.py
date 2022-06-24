@@ -17,9 +17,6 @@ class Shop(Base):
         psql.UUID(as_uuid=True), primary_key=True, index=True, nullable=False
     )
     name = sa.Column(sa.String, nullable=False)
-    # date = sa.Column(
-    #     sa.DateTime(timezone=datetime.timezone.utc), nullable=False
-    # )
     parentId = sa.Column(
         psql.UUID(as_uuid=True),
         sa.ForeignKey('shop_unit.id'),
@@ -32,11 +29,6 @@ class Shop(Base):
         sa.Enum(ShopUnitType, name='type_enum', create_type=False),
         nullable=False,
     )
-
-    #
-    # price = sa.Column(
-    #     sa.Integer, sa.CheckConstraint('price >= 0'), nullable=True
-    # )
 
     children: List['Shop'] = so.relationship(
         'Shop',
@@ -58,22 +50,17 @@ class ShopHistory(Base):
         psql.UUID(as_uuid=True),
         sa.ForeignKey('shop_unit.id'),
         index=True,
-        nullable=False
+        nullable=False,
     )
     date = sa.Column(
-        sa.DateTime(timezone=datetime.timezone.utc),
-        nullable=False
+        sa.DateTime(timezone=datetime.timezone.utc), nullable=False
     )
 
     price = sa.Column(
         sa.Integer, sa.CheckConstraint('price >= 0'), nullable=True
     )
 
-    __table_args__ = (
-        sa.PrimaryKeyConstraint(
-            id, date
-        ),
-    )
+    __table_args__ = (sa.PrimaryKeyConstraint(id, date),)
 
     def __init__(self, id, date, price, *args, **kwargs):
         self.id = id
