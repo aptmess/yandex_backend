@@ -77,16 +77,6 @@ def get_sales(
         )
         .all()
     )
-    print(items)
-    # items = (
-    #     session.query(Shop)
-    #     .filter(
-    #         Shop.type == ShopUnitType.OFFER,
-    #         Shop.date <= date,
-    #         Shop.date >= date - timedelta(hours=24),
-    #     )
-    #     .all()
-    # )
     if len(items) > 0:
         return {
             'items': items

@@ -79,7 +79,6 @@ def get_node_id_statistic(
         .filter(Shop.id == id)
         .one_or_none()
     )
-    print(type_cat)
     if type_cat is None:
         raise EXCEPTION_404_NOT_FOUND
 
@@ -132,7 +131,6 @@ def get_node_id_statistic(
             .all()
         )
         result = []
-        print(datetimes)
         if len(datetimes) > 0:
             for x in datetimes:
                 windows_params = {
