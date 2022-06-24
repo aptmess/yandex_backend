@@ -7,13 +7,22 @@ from app.api.routes.log_route import LogRoute
 from app.core.engine import get_session
 from app.core.models import Shop
 from app.schemas.error import Error
+from app.schemas.response import HTTP_400_RESPONSE
 from app.schemas.shop_item import ShopUnitImportRequest
 
 router = APIRouter(route_class=LogRoute)
 
 
 @router.post(
-    '/imports', response_model=None, responses={'400': {'model': Error}}
+    '/imports',
+    response_model=None,
+    responses={
+        status.HTTP_200_OK: {
+            'description': 'Вставка и обновление данных произошли успешно',
+            'model': None,
+        },
+        status.HTTP_404_NOT_FOUND: HTTP_400_RESPONSE,
+    },
 )
 def post_imports(
     body: ShopUnitImportRequest = None, session: Session = Depends(get_session)

@@ -1,7 +1,7 @@
 from app.schemas.error import Error
 
 HTTP_400_RESPONSE = {
-    'description': 'Невалидная схема документа или входные данные не ' 'верны',
+    'description': 'Невалидная схема документа или входные данные не верны',
     'model': Error,
     'content': {
         'application/json': {
