@@ -1,13 +1,18 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Union
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.api.routes.log_route import LogRoute
 from app.core.engine import get_session
+from app.core.models import Shop, ShopHistory
+from sqlalchemy import func
 from app.schemas.error import Error
-from app.schemas.statistic import ShopUnitStatisticResponse
+from app.schemas.response import HTTP_400_RESPONSE
+from app.core.utils import row2dict
+from app.schemas.shop_item import ShopUnitType
+from app.schemas.statistic import ShopUnitStatisticResponse, ShopUnitStatisticUnit
 
 router = APIRouter(route_class=LogRoute)
 
@@ -15,7 +20,7 @@ router = APIRouter(route_class=LogRoute)
 @router.get(
     '/sales',
     response_model=ShopUnitStatisticResponse,
-    responses={'400': {'model': Error}},
+    responses={status.HTTP_400_BAD_REQUEST: HTTP_400_RESPONSE},
 )
 def get_sales(
     date: datetime, session: Session = Depends(get_session)
@@ -35,3 +40,55 @@ def get_sales(
 
     - 400: Невалидная схема документа или входные данные не верны. Validation Failed
     """
+    windows_params = {
+        'partition_by': [ShopHistory.id],
+        'order_by': ShopHistory.date.desc(),
+    }
+    subquery = (
+        session.query(
+            ShopHistory.id,
+            ShopHistory.date,
+            ShopHistory.price,
+            func.row_number().over(**windows_params).label('row_number'),
+        )
+        # .filter(
+        #     ShopHistory.id.in_(tuple(get_children(shop))),
+        # )
+        .subquery('t')
+    )
+    sub2 = (
+        session
+        .query(
+            subquery.c.id,
+            subquery.c.date,
+            subquery.c.price
+        )
+        .filter(subquery.c.row_number == 1)
+        .subquery('t1')
+    )
+    items = (
+        session
+        .query(sub2.c.id, sub2.c.date, sub2.c.price, Shop.type, Shop.name)
+        .filter(
+            Shop.id == sub2.c.id,
+            Shop.type == ShopUnitType.OFFER,
+            sub2.c.date <= date,
+            sub2.c.date >= date - timedelta(hours=24),
+        )
+        .all()
+    )
+    print(items)
+    # items = (
+    #     session.query(Shop)
+    #     .filter(
+    #         Shop.type == ShopUnitType.OFFER,
+    #         Shop.date <= date,
+    #         Shop.date >= date - timedelta(hours=24),
+    #     )
+    #     .all()
+    # )
+    if len(items) > 0:
+        return {
+            'items': items
+        }
+

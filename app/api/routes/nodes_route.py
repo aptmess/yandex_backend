@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 
 from app.api.routes.log_route import LogRoute
 from app.core.engine import get_session
-from app.core.models import Shop
+from sqlalchemy import func
+from app.core.models import Shop, ShopHistory
 from app.core.utils import recursive_nodes, row2dict
 from app.exceptions import EXCEPTION_404_NOT_FOUND
 from app.schemas.error import Error
@@ -52,10 +53,12 @@ def get_nodes_id(
 
     - 404: Категория/товар не найден. "Item not found"
     """
+
     shop = session.query(Shop).filter_by(id=id).one_or_none()
     if shop is None:
         raise EXCEPTION_404_NOT_FOUND
     if shop.type == ShopUnitType.CATEGORY:
-        return recursive_nodes(shop)[0]
+        m = recursive_nodes(shop, session, ShopHistory)[0]
+        return m
     else:
         return row2dict(shop)
