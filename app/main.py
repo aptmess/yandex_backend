@@ -37,7 +37,7 @@ def get_application() -> FastAPI:
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content=jsonable_encoder(
-                {'message': f'Validation Failed', 'error': exc.errors()}
+                {'detail': f'Validation Failed', 'error': exc.errors()}
             ),
         )
 

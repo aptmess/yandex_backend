@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Union
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Query
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 

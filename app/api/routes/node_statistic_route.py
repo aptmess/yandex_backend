@@ -89,7 +89,7 @@ def get_node_id_statistic(
         items = (
             session.query(t1, Shop.name, Shop.type, Shop.parentId)
             .filter(t1.c.id == Shop.id)
-            .order_by(t1.c.date.desc())
+            .order_by(t1.c.date.asc())
             .all()
         )
         if len(items) > 0:

@@ -2,12 +2,13 @@ from typing import Union
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.api.routes.log_route import LogRoute
 from app.core.engine import get_session
 from app.core.models import Shop, ShopHistory
-from app.core.utils import recursive_nodes, row2dict
+from app.core.utils import recursive_nodes
 from app.exceptions import EXCEPTION_404_NOT_FOUND
 from app.schemas.error import Error
 from app.schemas.response import HTTP_400_RESPONSE, HTTP_404_RESPONSE
@@ -59,4 +60,35 @@ def get_nodes_id(
     if shop.type == ShopUnitType.CATEGORY:
         return recursive_nodes(shop, session, ShopHistory)[0]
     else:
-        return row2dict(shop)
+        windows_params = {
+            'partition_by': [ShopHistory.id],
+            'order_by': ShopHistory.date.desc(),
+        }
+        subquery = (
+            session.query(
+                ShopHistory.id,
+                ShopHistory.date,
+                ShopHistory.price,
+                func.row_number().over(**windows_params).label('row_number'),
+            )
+            .filter(ShopHistory.id == id)
+            .subquery('t')
+        )
+        sub2 = (
+            session.query(subquery.c.id, subquery.c.date, subquery.c.price)
+            .filter(subquery.c.row_number == 1)
+            .subquery('t1')
+        )
+        items = (
+            session.query(
+                sub2.c.id,
+                sub2.c.date,
+                sub2.c.price,
+                Shop.type,
+                Shop.name,
+                Shop.parentId,
+            )
+            .filter(Shop.id == sub2.c.id)
+            .first()
+        )
+        return items

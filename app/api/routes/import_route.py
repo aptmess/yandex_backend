@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.api.routes.log_route import LogRoute
 from app.core.engine import get_session
 from app.core.models import Shop, ShopHistory
+from app.exceptions import EXCEPTION_400_BAD_REQUEST_VALIDATION_ERROR
 from app.schemas.error import Error
 from app.schemas.response import HTTP_400_RESPONSE
 from app.schemas.shop_item import ShopUnitImportRequest
@@ -74,7 +75,13 @@ def post_imports(
     updated_date = response['updateDate']
     if body is not None:
         for value in response['items']:
-            session.merge(Shop(**value))
+            shop = (
+                session.query(Shop).filter(Shop.id == value['id']).one_or_none()
+            )
+            if shop is not None and shop.type != value['type']:
+                raise EXCEPTION_400_BAD_REQUEST_VALIDATION_ERROR
+            else:
+                session.merge(Shop(**value))
             session.add(ShopHistory(**value, date=updated_date))
 
         session.commit()
