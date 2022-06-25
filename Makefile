@@ -30,6 +30,7 @@ up:
 
 .PHONY: venv
 venv:
+	python3.9 -m venv $(VENV)
 	$(SOURCE)/python -m pip install --upgrade pip
 	$(SOURCE)/python -m pip install poetry
 	$(SOURCE)/poetry install
