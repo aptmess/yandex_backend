@@ -26,11 +26,11 @@ app:
 
 .PHONY: up
 up:
-	uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+	uvicorn app.main:app --host 0.0.0.0 --port 80 --reload
 
 .PHONY: venv
 venv:
-	python3.9 -m venv $(VENV)
+	python3.8 -m venv $(VENV)
 	$(SOURCE)/python -m pip install --upgrade pip
 	$(SOURCE)/python -m pip install poetry
 	$(SOURCE)/poetry install
