@@ -1,6 +1,4 @@
-from tests.test_assets.expected_sales import (
-    EXPECTED_SALE_BY_DATE
-)
+from tests.test_assets.expected_sales import EXPECTED_SALE_BY_DATE
 
 
 class TestSale:
@@ -14,9 +12,7 @@ class TestSale:
 
     def test_date_validation_error(self, client):
         for date in ['02-02-2012', '2012-02-02', 'a']:
-            response = client.get(
-                f'/sales?date={date}'
-            )
+            response = client.get(f'/sales?date={date}')
             assert response.status_code == 400
             assert response.json()['detail'] == 'Validation Failed'
 
@@ -26,4 +22,4 @@ class TestSale:
         )
         assert response.status_code == 200
         data = response.json()
-        assert data is None
+        assert data == {'items': []}

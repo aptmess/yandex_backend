@@ -1,5 +1,6 @@
 import datetime
-from typing import List
+from typing import Any, Dict, List, Optional
+from uuid import UUID
 
 import sqlalchemy as sa
 import sqlalchemy.orm as so
@@ -43,11 +44,21 @@ class Shop(Base):
         cascade='all, delete',
     )
 
-    def __init__(self, id, name, type, parentId=None, *args, **kwargs):
+    def __init__(
+        self,
+        id: UUID,
+        name: str,
+        type: str,
+        *args: List[Any],
+        parentId: Optional[UUID] = None,
+        **kwargs: Dict[str, Any]
+    ) -> None:
         self.id = id
         self.name = name
         self.type = type
         self.parentId = parentId
+        self.args = args
+        self.kwargs = kwargs
 
 
 class ShopHistory(Base):
@@ -68,7 +79,16 @@ class ShopHistory(Base):
 
     __table_args__ = (sa.PrimaryKeyConstraint(id, date),)
 
-    def __init__(self, id, date, price, *args, **kwargs):
+    def __init__(
+        self,
+        id: UUID,
+        date: datetime.datetime,
+        price: int,
+        *args: List[Any],
+        **kwargs: Dict[str, Any]
+    ) -> None:
         self.id = id
         self.price = price
         self.date = date
+        self.args = args
+        self.kwargs = kwargs

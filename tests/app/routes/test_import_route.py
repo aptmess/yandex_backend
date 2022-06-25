@@ -25,6 +25,6 @@ class TestImportRoute:
                 'updateDate': '2022-02-10T12:00:00.000Z',
             },
         ]:
-            response = client.post(f'/imports', data=data)
+            response = client.post('/imports', data=data)
             assert response.status_code == 400
             assert response.json()['detail'] == 'Validation Failed'

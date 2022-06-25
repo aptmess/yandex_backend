@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Union
 
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import APIRouter, Depends, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -72,5 +72,4 @@ def get_sales(
         )
         .all()
     )
-    if len(items) > 0:
-        return {'items': items}
+    return ShopUnitStatisticResponse(**{'items': items})

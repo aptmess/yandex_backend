@@ -19,7 +19,7 @@ class GlobalConfig(BaseSettings):
     ENVIRONMENT: Optional[str] = getenv(
         'ENVIRONMENT', cast=str, default=os.environ.get('ENVIRONMENT')
     )
-    DATABASE_URL: str = getenv(
+    DATABASE_URL: Optional[str] = getenv(
         'DATABASE_URL', cast=str, default=os.environ.get('DATABASE_URL')
     )
 

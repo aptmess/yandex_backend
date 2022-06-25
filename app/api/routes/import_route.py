@@ -25,9 +25,9 @@ router = APIRouter(route_class=LogRoute)
         status.HTTP_404_NOT_FOUND: HTTP_400_RESPONSE,
     },
 )
-def post_imports(
-    body: ShopUnitImportRequest = None, session: Session = Depends(get_session)
-) -> Union[None, Error]:
+def post_imports(  # type: ignore
+    body: ShopUnitImportRequest = None, session: Session = Depends(get_session)  # type: ignore
+) -> Union[None, Error]:  # type: ignore
     """
     Импортирует новые товары и/или категории.
 
@@ -71,6 +71,8 @@ def post_imports(
 
     - 400: Невалидная схема документа или входные данные не верны. "Validation Failed"
     """
+    if body is None:
+        return Response(status_code=status.HTTP_200_OK)
     response = body.dict()
     updated_date = response['updateDate']
     if body is not None:
@@ -80,9 +82,8 @@ def post_imports(
             )
             if shop is not None and shop.type != value['type']:
                 raise EXCEPTION_400_BAD_REQUEST_VALIDATION_ERROR
-            else:
-                session.merge(Shop(**value))
+            session.merge(Shop(**value))
             session.add(ShopHistory(**value, date=updated_date))
 
         session.commit()
-    return Response(status_code=status.HTTP_200_OK)
+    return Response(status_code=status.HTTP_200_OK)  # type: ignore

@@ -33,11 +33,11 @@ def get_application() -> FastAPI:
     @application.exception_handler(RequestValidationError)
     async def validation_exception_handler(
         request: Request, exc: RequestValidationError
-    ):
+    ) -> JSONResponse:
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content=jsonable_encoder(
-                {'detail': f'Validation Failed', 'error': exc.errors()}
+                {'detail': 'Validation Failed', 'error': exc.errors()}
             ),
         )
 

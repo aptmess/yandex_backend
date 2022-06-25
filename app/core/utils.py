@@ -1,5 +1,9 @@
 from datetime import datetime
 from math import floor
+from typing import Any, Dict, Tuple
+
+from sqlalchemy.ext.declarative import DeclarativeMeta
+from sqlalchemy.orm import Session
 
 
 def convert_datetime_to_iso(dt: datetime) -> str:
@@ -8,11 +12,13 @@ def convert_datetime_to_iso(dt: datetime) -> str:
     ).replace('+00:00', 'Z')
 
 
-def row2dict(r):
+def row2dict(r: DeclarativeMeta) -> Dict[str, Any]:
     return {c.name: getattr(r, c.name) for c in r.__table__.columns}
 
 
-def recursive_nodes(root, session, model):
+def recursive_nodes(
+    root: DeclarativeMeta, session: Session, model: DeclarativeMeta
+) -> Tuple[Dict[str, Any], datetime, int, int]:
     data = row2dict(root)
     db = (
         session.query(model.date, model.price)
@@ -25,23 +31,23 @@ def recursive_nodes(root, session, model):
     data['price'] = price
     if not root.children:
         return data, updated_date, price, 1
-    else:
-        data['children'] = []
-        value, count = 0, 0
-        for child in root.children:
-            d, updated_date, price, current_count = recursive_nodes(
-                child, session, model
-            )
-            value += price
-            count += current_count
-            data['children'].append(d)
-            if data['date'] <= updated_date:
-                data['date'] = updated_date
-        data['price'] = int(floor(value / count))
-        return data, updated_date, value, count
+
+    data['children'] = []
+    value, count = 0, 0
+    for child in root.children:
+        d, updated_date, price, current_count = recursive_nodes(
+            child, session, model
+        )
+        value += price
+        count += current_count
+        data['children'].append(d)
+        if data['date'] <= updated_date:
+            data['date'] = updated_date
+    data['price'] = int(floor(value / count))
+    return data, updated_date, value, count
 
 
-def check_isoformat_data(date: str):
+def check_isoformat_data(date: datetime) -> datetime:
     try:
         datetime.fromisoformat(str(date).replace('Z', '+00:00'))
     except ValueError as ex:

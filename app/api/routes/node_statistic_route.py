@@ -4,6 +4,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import func
+from sqlalchemy.ext.declarative import DeclarativeMeta
 from sqlalchemy.orm import Session
 
 from app.api.routes.log_route import LogRoute
@@ -19,7 +20,7 @@ from app.schemas.statistic import ShopUnitStatisticResponse
 router = APIRouter(route_class=LogRoute)
 
 
-def get_children(root):
+def get_children(root: DeclarativeMeta):  # type: ignore
     if not root.children:
         pass
     else:
@@ -80,7 +81,7 @@ def get_node_id_statistic(
     if type_cat is None:
         raise EXCEPTION_404_NOT_FOUND
 
-    elif type_cat.type == ShopUnitType.OFFER:
+    if type_cat.type == ShopUnitType.OFFER:
         t1 = (
             session.query(ShopHistory)
             .filter(ShopHistory.id == id, *condition)
@@ -92,52 +93,47 @@ def get_node_id_statistic(
             .order_by(t1.c.date.asc())
             .all()
         )
-        if len(items) > 0:
-            return {'items': items}
-    else:
-        shop = session.query(Shop).filter(Shop.id == id).first()
-        childrends = tuple(get_children(shop))
-        query = (
-            session.query(ShopHistory)
-            .filter(ShopHistory.id.in_(childrends), *condition)
-            .subquery('t1')
-        )
-        datetimes = (
-            session.query(query.c.date)
-            .distinct()
-            .order_by(query.c.date.asc())
-            .all()
-        )
-        result = []
-        if len(datetimes) > 0:
-            for x in datetimes:
-                windows_params = {
-                    'partition_by': [query.c.id],
-                    'order_by': query.c.date.desc(),
-                }
-                tmp = (
-                    session.query(
-                        query,
-                        func.row_number()
-                        .over(**windows_params)
-                        .label('row_number'),
-                    )
-                    .filter(query.c.date <= x[0])
-                    .subquery('t2')
-                )
+        return ShopUnitStatisticResponse(**{'items': items})
 
-                res = (
-                    session.query(tmp.c.price)
-                    .filter(tmp.c.row_number == 1)
-                    .all()
+    shop = session.query(Shop).filter(Shop.id == id).first()
+    childrends = tuple(get_children(shop))
+    query = (
+        session.query(ShopHistory)
+        .filter(ShopHistory.id.in_(childrends), *condition)
+        .subquery('t1')
+    )
+    datetimes = (
+        session.query(query.c.date)
+        .distinct()
+        .order_by(query.c.date.asc())
+        .all()
+    )
+    result = []
+    if len(datetimes) > 0:
+        for x in datetimes:
+            windows_params = {
+                'partition_by': [query.c.id],
+                'order_by': query.c.date.desc(),
+            }
+            tmp = (
+                session.query(
+                    query,
+                    func.row_number()
+                    .over(**windows_params)
+                    .label('row_number'),
                 )
-                result.append(
-                    {
-                        **row2dict(shop),
-                        **{
-                            'date': x[0],
-                            'price': sum([x[0] for x in res]) / len(res),
-                        },
-                    }
-                )
-        return {'items': result}
+                .filter(query.c.date <= x[0])
+                .subquery('t2')
+            )
+
+            res = session.query(tmp.c.price).filter(tmp.c.row_number == 1).all()
+            result.append(
+                {
+                    **row2dict(shop),
+                    **{
+                        'date': x[0],
+                        'price': sum(x[0] for x in res) / len(res),
+                    },
+                }
+            )
+    return ShopUnitStatisticResponse(**{'items': result})

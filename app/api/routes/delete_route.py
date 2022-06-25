@@ -57,6 +57,6 @@ def delete_delete_id(
     try:
         session.delete(shop)
         session.commit()
-        return Response(status_code=status.HTTP_200_OK)
-    except Exception:
-        raise EXCEPTION_400_BAD_REQUEST_VALIDATION_ERROR
+        return Response(status_code=status.HTTP_200_OK)  # type: ignore
+    except Exception as exc:
+        raise EXCEPTION_400_BAD_REQUEST_VALIDATION_ERROR from exc

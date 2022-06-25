@@ -37,7 +37,7 @@ class ShopUnitStatisticUnit(BaseModel):
     )
 
     @validator('date')
-    def check_date_iso_8601(cls, v):
+    def check_date_iso_8601(cls, v: datetime) -> datetime:
         return check_isoformat_data(v)
 
     class Config:

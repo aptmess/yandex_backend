@@ -58,37 +58,36 @@ def get_nodes_id(
     if shop is None:
         raise EXCEPTION_404_NOT_FOUND
     if shop.type == ShopUnitType.CATEGORY:
-        return recursive_nodes(shop, session, ShopHistory)[0]
-    else:
-        windows_params = {
-            'partition_by': [ShopHistory.id],
-            'order_by': ShopHistory.date.desc(),
-        }
-        subquery = (
-            session.query(
-                ShopHistory.id,
-                ShopHistory.date,
-                ShopHistory.price,
-                func.row_number().over(**windows_params).label('row_number'),
-            )
-            .filter(ShopHistory.id == id)
-            .subquery('t')
+        return ShopUnit(**recursive_nodes(shop, session, ShopHistory)[0])
+    windows_params = {
+        'partition_by': [ShopHistory.id],
+        'order_by': ShopHistory.date.desc(),
+    }
+    subquery = (
+        session.query(
+            ShopHistory.id,
+            ShopHistory.date,
+            ShopHistory.price,
+            func.row_number().over(**windows_params).label('row_number'),
         )
-        sub2 = (
-            session.query(subquery.c.id, subquery.c.date, subquery.c.price)
-            .filter(subquery.c.row_number == 1)
-            .subquery('t1')
+        .filter(ShopHistory.id == id)
+        .subquery('t')
+    )
+    sub2 = (
+        session.query(subquery.c.id, subquery.c.date, subquery.c.price)
+        .filter(subquery.c.row_number == 1)
+        .subquery('t1')
+    )
+    items = (
+        session.query(
+            sub2.c.id,
+            sub2.c.date,
+            sub2.c.price,
+            Shop.type,
+            Shop.name,
+            Shop.parentId,
         )
-        items = (
-            session.query(
-                sub2.c.id,
-                sub2.c.date,
-                sub2.c.price,
-                Shop.type,
-                Shop.name,
-                Shop.parentId,
-            )
-            .filter(Shop.id == sub2.c.id)
-            .first()
-        )
-        return items
+        .filter(Shop.id == sub2.c.id)
+        .first()
+    )
+    return items
