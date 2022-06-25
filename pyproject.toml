@@ -23,6 +23,7 @@ flake8 = "^4.0"
 pylint = "^2.12.1"
 mypy = "^0.940"
 autoflake = "^1.4"
+pytest-dependency = "0.4.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

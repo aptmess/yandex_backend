@@ -436,6 +436,17 @@ pytest = ">=4.6"
 testing = ["fields", "hunter", "process-tests", "six", "pytest-xdist", "virtualenv"]
 
 [[package]]
+name = "pytest-dependency"
+version = "0.4.0"
+description = "Manage dependencies of tests"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+pytest = ">=3.6.0"
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -605,7 +616,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "db132341a0f46a301835ef1d2a51a2382755efd84925257adb78ece9c7311ea1"
+content-hash = "2150a2052f76aae08ec314c2fe0eb887eac1320c95f2d5d5a5dd2c139cd7b85a"
 
 [metadata.files]
 anyio = [
@@ -1006,6 +1017,9 @@ pytest = [
 pytest-cov = [
     {file = "pytest-cov-3.0.0.tar.gz", hash = "sha256:e7f0f5b1617d2210a2cabc266dfe2f4c75a8d32fb89eafb7ad9d06f6d076d470"},
     {file = "pytest_cov-3.0.0-py3-none-any.whl", hash = "sha256:578d5d15ac4a25e5f961c938b85a05b09fdaae9deef3bb6de9a6e766622ca7a6"},
+]
+pytest-dependency = [
+    {file = "pytest-dependency-0.4.0.tar.gz", hash = "sha256:bda0ef48e6a44c091399b12ab4a7e580d2dd8294c222b301f88d7d57f47ba142"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
